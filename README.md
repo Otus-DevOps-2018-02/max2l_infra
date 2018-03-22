@@ -12,6 +12,16 @@ gcloud compute instances create reddit-app --boot-disk-size=10GB --image-family 
 gcloud compute --project=valued-clarity-198010 firewall-rules create default-puma-server  --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:9292 --source-ranges=0.0.0.0/0 --target-tags=puma-server
 ```
  - Установку и сборку программного необходимо проиводить с помошью скриптов `install_mongodb.sh`, `install_ruby.sh` и `deploy.sh`. Для автоматизации этой процедуры при создании виртуальной можно воспользоваться скриптом `startupScript.sh` 
+
+ - В файле `packer/ubuntu16.json` описаны параметры для сборки пользовательского образа в GCP с помощью packer. В файле `packer/variables.json.example` содержиться пример пользовательских параметров для сборки. Пороверить корректность всех параметров можно командой: 
+```
+packer build -var-file=packer/variables.json  packer/ubuntu16.json
+```
+ - В файле `packer/immutable.json` содержаться параметры для сборки образа и запуска приложения Puma после старта микросервера.
+ - Директория `packer/scripts/` содержит скрипты для установки ПО и сборки приложения Puma.
+ - Файл `packer/files/puma.service` необходим для запуска Puma через `systemd`
+ - Файл `config-scripts/create-reddit-vm.sh` содержит комманды для запуска миркросервера и создания правил фаервола для доступа из внешней сети к приложению Puma.
+ 
  ## Подключение
  - Для упрошения доступа к хостам через bastion хост можно создать алиас. Для этого необходимо в файл ` ~/.ssh/config` добавить следушие строчки
 
@@ -32,6 +42,15 @@ alias someinternalhost='ssh -A -i ~/.ssh/appuser -tt  appuser@35.195.18.128 ssh 
 Предворительно, для использования алиасов,  необходимо загрузить приватный ssh ключ в `ssh-agent` с помощью комманды `ssh-add`
 
  - Для подключения к собраному ПО Puma необходимо использовать протокол `http` и порт `9292`
+ - Сборку пользовательского образа без приложения Puma необходимо производить коммандой.
+```
+packer build -var-file=packer/variables.json  packer/ubuntu16.json
+```
+ - Сборку пользовательского образа с приложением Puma необходимо производить коммандой.
+```
+packer build packer/immutable.json
+```
+ - Для запуска микросервера и для настройки правил фаервола необходимо выполнить скрипт `config-scripts/create-reddit-vm.sh`
 
 ## Сетевые настройки
 ```
