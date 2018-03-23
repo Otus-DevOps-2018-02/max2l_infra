@@ -1,4 +1,15 @@
 {
+   "variables": {
+   "proj_id": null,
+   "source_image_family": null,
+    "machine_type": "f1-micro",
+    "disk_type": "pd-standard",
+    "disk_size": "10",
+    "network": "default",
+    "image_family":"reddit-full",
+    "tags": "redit-server"
+  },
+
   "builders": [
     {
       "type": "googlecompute",
