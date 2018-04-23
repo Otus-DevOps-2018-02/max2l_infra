@@ -2,7 +2,7 @@
   become: true
   hosts:
     - app
-    - tag_reddit-db
+    - tag_reddit-app
   roles:
     - app
     - jdauphant.nginx
